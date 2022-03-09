@@ -78,7 +78,8 @@
         defaultApp = self.apps.${system}.my-app;
 
         devShell = pkgs.mkShell {
-          inputsFrom = builtins.attrValues self.checks;
+          inputsFrom = builtins.attrValues self.checks 
+            ++ [ cargoArtifacts recaphub ];
 
           # Extra inputs can be added here
           nativeBuildInputs = with pkgs; [
