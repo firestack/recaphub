@@ -25,17 +25,22 @@
         craneLib = crane.lib.${system};
         src = ./.;
 
+        openssl-sysNativeDeps = {
+          nativeBuildInputs = [ pkgs.pkg-config ];
+          buildInputs = [ pkgs.openssl.dev ];
+        };
+
         # Build *just* the cargo dependencies, so we can reuse
         # all of that work (e.g. via cachix) when running in CI
-        cargoArtifacts = craneLib.buildDepsOnly {
+        cargoArtifacts = craneLib.buildDepsOnly ({
           inherit src;
-        };
+        } // openssl-sysNativeDeps);
 
         # Build the actual crate itself, reusing the dependency
         # artifacts from above.
-        recaphub = craneLib.buildPackage {
+        recaphub = craneLib.buildPackage ({
           inherit cargoArtifacts src;
-        };
+        } // openssl-sysNativeDeps);
       in
       {
         checks = {
